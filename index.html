@@ -105,23 +105,24 @@ var LZString=function(){var r=String.fromCharCode,o="ABCDEFGHIJKLMNOPQRSTUVWXYZa
 		<div id="init-loading"><div>Loading&hellip;</div></div>
 	</div>
 	<tw-storydata name="Paintest" startnode="2" creator="Twine" creator-version="2.9.2" format="SugarCube" format-version="2.37.3" ifid="A2C7DFC7-B99A-47C0-8EE8-133DF4A60DC6" options="" tags="" zoom="1" hidden><style role="stylesheet" id="twine-user-stylesheet" type="text/twine-css">button.twine-button {
-    width: 200px;        /* Ensures all buttons are the same width */
-    min-height: 50px;    /* Minimum height of buttons */
-    padding: 10px;       /* Adds padding inside the buttons */
-    font-size: 16px;     /* Sets the text size inside the buttons */
-    text-align: center;  /* Centers the text inside the buttons */
-    margin: 5px auto;    /* Adds space around the buttons and centers them */
-    border: 1px solid #000; /* Adds a border */
-    background-color: #007bff; /* Sets background color */
-    color: white;        /* Sets text color */
-    border-radius: 5px;  /* Rounded corners */
-    box-sizing: border-box; /* Includes padding and border in the width and height */
-    display: block;      /* Block display to take full width as set */
+    width: 200px !important;        /* Ensures all buttons are the same width */
+    min-height: 50px !important;    /* Minimum height of buttons */
+    padding: 10px !important;       /* Adds padding inside the buttons */
+    font-size: 16px !important;     /* Sets the text size inside the buttons */
+    text-align: center !important;  /* Centers the text inside the buttons */
+    margin: 5px auto !important;    /* Adds space around the buttons and centers them */
+    border: 1px solid #000 !important; /* Adds a border */
+    background-color: #007bff !important; /* Sets background color */
+    color: white !important;        /* Sets text color */
+    border-radius: 5px !important;  /* Rounded corners */
+    box-sizing: border-box !important; /* Includes padding and border in the width and height */
+    display: block !important;      /* Block display to take full width as set */
 }
 
 button.twine-button:hover {
-    background-color: #0056b3; /* Darker blue on hover */
+    background-color: #0056b3 !important; /* Darker blue on hover */
 }
+
 
 
 
@@ -159,7 +160,7 @@ button.twine-button:hover {
         font-size: 24px; /* Slightly larger font size for large screens */
     }
 }</style><script role="script" id="twine-user-script" type="text/twine-javascript"></script><tw-passagedata pid="1" name="StoryInit" tags="" position="50,25" size="100,100">&lt;&lt;set $score = 0&gt;&gt;
-</tw-passagedata><tw-passagedata pid="2" name="Question1" tags="" position="250,25" size="100,100">V1 Have you experienced pain, tingling, burning, numbness, or weakness for more than 6 months or has discomfort returned to an old area of injury?
+</tw-passagedata><tw-passagedata pid="2" name="Question1" tags="" position="250,25" size="100,100">V2 Have you experienced pain, tingling, burning, numbness, or weakness for more than 6 months or has discomfort returned to an old area of injury?
 
 &lt;&lt;button &quot;Yes&quot;&gt;&gt;
   &lt;&lt;set $score += 5&gt;&gt;
