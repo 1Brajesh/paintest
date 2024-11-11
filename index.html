@@ -104,7 +104,40 @@ var LZString=function(){var r=String.fromCharCode,o="ABCDEFGHIJKLMNOPQRSTUVWXYZa
 		<div id="init-lacking"><p>Browser lacks capabilities required to play.</p><p>Upgrade or switch to another browser.</p></div>
 		<div id="init-loading"><div>Loading&hellip;</div></div>
 	</div>
-	<tw-storydata name="Paintest" startnode="2" creator="Twine" creator-version="2.9.2" format="SugarCube" format-version="2.37.3" ifid="A2C7DFC7-B99A-47C0-8EE8-133DF4A60DC6" options="" tags="" zoom="1" hidden><style role="stylesheet" id="twine-user-stylesheet" type="text/twine-css"></style><script role="script" id="twine-user-script" type="text/twine-javascript"></script><tw-passagedata pid="1" name="StoryInit" tags="" position="50,25" size="100,100">&lt;&lt;set $score = 0&gt;&gt;
+	<tw-storydata name="Paintest" startnode="2" creator="Twine" creator-version="2.9.2" format="SugarCube" format-version="2.37.3" ifid="A2C7DFC7-B99A-47C0-8EE8-133DF4A60DC6" options="" tags="" zoom="1" hidden><style role="stylesheet" id="twine-user-stylesheet" type="text/twine-css">/* Mobile-Specific Styling */
+@media (max-width: 600px) {
+    body {
+        font-size: 18px; /* Slightly smaller font size for mobile */
+        line-height: 1.4; /* Adjust line height for smaller screens */
+    }
+    
+    tw-story {
+        padding: 15px;
+        max-width: 100%; /* Allow the story container to take up the full width on small screens */
+        margin: 0 auto;
+        background-color: rgba(255, 255, 255, 0.9); /* Increase opacity for better readability on mobile */
+    }
+
+    tw-passage {
+        font-size: 18px; /* Decrease text size for mobile readability */
+        max-width: 100%; /* Full width for text on small screens */
+    }
+
+    a {
+        font-size: 18px; /* Ensure link text isn't too small on mobile */
+    }
+}
+
+/* Large Desktop Screens */
+@media (min-width: 1200px) {
+    tw-story {
+        max-width: 60%; /* Restrict width on large screens for better readability */
+    }
+
+    tw-passage {
+        font-size: 24px; /* Slightly larger font size for large screens */
+    }
+}</style><script role="script" id="twine-user-script" type="text/twine-javascript"></script><tw-passagedata pid="1" name="StoryInit" tags="" position="50,25" size="100,100">&lt;&lt;set $score = 0&gt;&gt;
 </tw-passagedata><tw-passagedata pid="2" name="Question1" tags="" position="250,25" size="100,100">Have you experienced pain, tingling, burning, numbness, or weakness for more than 6 months or has discomfort returned to an old area of injury?
 
 &lt;&lt;button &quot;Yes&quot;&gt;&gt;
