@@ -172,10 +172,12 @@ var LZString=function(){var r=String.fromCharCode,o="ABCDEFGHIJKLMNOPQRSTUVWXYZa
   &lt;&lt;goto &quot;Question4&quot;&gt;&gt;
 &lt;&lt;/button&gt;&gt;
 </tw-passagedata><tw-passagedata pid="5" name="Question4" tags="" position="625,25" size="100,100">Have you been told any of the following?
-- &#39;Surgery will not (or has not) helped&#39;
-- &#39;You have a soft tissue problem&#39;
-- &#39;Something is pressing on a nerve&#39;
-- &#39;Your problem is degenerative&#39;
+&lt;ul&gt;
+  &lt;li&gt;Surgery will not (or has not) helped&lt;/li&gt;
+  &lt;li&gt;You have a soft tissue problem&lt;/li&gt;
+  &lt;li&gt;Something is pressing on a nerve&lt;/li&gt;
+  &lt;li&gt;Your problem is degenerative&lt;/li&gt;
+&lt;/ul&gt;
 
 &lt;&lt;button &quot;Yes&quot;&gt;&gt;
   &lt;&lt;set $score += 5&gt;&gt;
@@ -219,15 +221,17 @@ var LZString=function(){var r=String.fromCharCode,o="ABCDEFGHIJKLMNOPQRSTUVWXYZa
   &lt;&lt;goto &quot;Question7&quot;&gt;&gt;
 &lt;&lt;/button&gt;&gt;
 </tw-passagedata><tw-passagedata pid="8" name="Question7" tags="" position="625,150" size="100,100">Do you have any history of Gastro-intestinal or other tension-related problems such as:
-- IBS
-- Constipation
-- Ulcer
-- Gastritis
-- Reflux
-- Tension or migraine headaches
-- Hives
-- Eczema
-- Any other tension-related issues?
+&lt;ul&gt;
+  &lt;li&gt;IBS&lt;/li&gt;
+  &lt;li&gt;Constipation&lt;/li&gt;
+  &lt;li&gt;Ulcer&lt;/li&gt;
+  &lt;li&gt;Gastritis&lt;/li&gt;
+  &lt;li&gt;Reflux&lt;/li&gt;
+  &lt;li&gt;Tension or migraine headaches&lt;/li&gt;
+  &lt;li&gt;Hives&lt;/li&gt;
+  &lt;li&gt;Eczema&lt;/li&gt;
+  &lt;li&gt;Any other tension-related issues?&lt;/li&gt;
+&lt;/ul&gt;
 
 &lt;&lt;button &quot;Two or more&quot;&gt;&gt;
   &lt;&lt;set $score += 5&gt;&gt;
@@ -244,16 +248,18 @@ var LZString=function(){var r=String.fromCharCode,o="ABCDEFGHIJKLMNOPQRSTUVWXYZa
   &lt;&lt;goto &quot;Question8&quot;&gt;&gt;
 &lt;&lt;/button&gt;&gt;
 </tw-passagedata><tw-passagedata pid="9" name="Question8" tags="" position="500,150" size="100,100">Have you tried any other methods of curing your pain such as:
-- Surgery
-- Drugs
-- Physical therapy
-- Acupuncture
-- Chiropractic
-- Exercise
-- Pain clinics
-- Yoga
-- Meditation
-- Or anything not included in this list?
+&lt;ul&gt;
+  &lt;li&gt;Surgery&lt;/li&gt;
+  &lt;li&gt;Drugs&lt;/li&gt;
+  &lt;li&gt;Physical therapy&lt;/li&gt;
+  &lt;li&gt;Acupuncture&lt;/li&gt;
+  &lt;li&gt;Chiropractic&lt;/li&gt;
+  &lt;li&gt;Exercise&lt;/li&gt;
+  &lt;li&gt;Pain clinics&lt;/li&gt;
+  &lt;li&gt;Yoga&lt;/li&gt;
+  &lt;li&gt;Meditation&lt;/li&gt;
+  &lt;li&gt;Or anything not included in this list?&lt;/li&gt;
+&lt;/ul&gt;
 
 &lt;&lt;button &quot;Two or more&quot;&gt;&gt;
   &lt;&lt;set $score += 5&gt;&gt;
@@ -286,15 +292,17 @@ var LZString=function(){var r=String.fromCharCode,o="ABCDEFGHIJKLMNOPQRSTUVWXYZa
   &lt;&lt;goto &quot;Question10&quot;&gt;&gt;
 &lt;&lt;/button&gt;&gt;
 </tw-passagedata><tw-passagedata pid="11" name="Question10" tags="" position="250,150" size="100,100">Do you have any of the following traits:
-- Dependable
-- Controlling
-- Spiritual
-- Do-gooder
-- Perfectionist
-- Sensitive to criticism
-- People pleaser
-- Compulsive
-- Hard on yourself?
+&lt;ul&gt;
+  &lt;li&gt;Dependable&lt;/li&gt;
+  &lt;li&gt;Controlling&lt;/li&gt;
+  &lt;li&gt;Spiritual&lt;/li&gt;
+  &lt;li&gt;Do-gooder&lt;/li&gt;
+  &lt;li&gt;Perfectionist&lt;/li&gt;
+  &lt;li&gt;Sensitive to criticism&lt;/li&gt;
+  &lt;li&gt;People pleaser&lt;/li&gt;
+  &lt;li&gt;Compulsive&lt;/li&gt;
+  &lt;li&gt;Hard on yourself&lt;/li&gt;
+&lt;/ul&gt;
 
 &lt;&lt;button &quot;Four or more&quot;&gt;&gt;
   &lt;&lt;set $score += 5&gt;&gt;
@@ -313,21 +321,20 @@ var LZString=function(){var r=String.fromCharCode,o="ABCDEFGHIJKLMNOPQRSTUVWXYZa
 </tw-passagedata><tw-passagedata pid="12" name="Results" tags="" position="250,300" size="100,100">&lt;&lt;if $score &lt; 16&gt;&gt;
   Your total score is &lt;&lt;print $score&gt;&gt;.
 
-  **Low Score**
+You have a low score and it is unlikely that the mind body approach will help you to heal yourself. I wish you the best healing success.
 
   Based on your responses, you have a low score.
 &lt;&lt;elseif $score &lt; 29&gt;&gt;
   Your total score is &lt;&lt;print $score&gt;&gt;.
 
-  **Medium Score**
+You have a medium score and it is possible that the cause of your pain originates in stress and tension. First, I would suggest you make sure you have seen a doctor and verify you do not have an organic disease before proceeding with any mind body methods to heal yourself.
 
   Based on your responses, you have a medium score.
 &lt;&lt;else&gt;&gt;
   Your total score is &lt;&lt;print $score&gt;&gt;.
 
-  **High Score**
+You have a high score and it is highly likely that the cause of your pain originates in stress and tension in your life. You have an excellent chance of healing yourself if you follow the guidelines in the free online book located here:
 
-  Based on your responses, you have a high score.
 &lt;&lt;/if&gt;&gt;
 
 &lt;&lt;button &quot;Restart&quot;&gt;&gt;
