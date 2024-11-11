@@ -105,21 +105,24 @@ var LZString=function(){var r=String.fromCharCode,o="ABCDEFGHIJKLMNOPQRSTUVWXYZa
 		<div id="init-loading"><div>Loading&hellip;</div></div>
 	</div>
 	<tw-storydata name="Paintest" startnode="2" creator="Twine" creator-version="2.9.2" format="SugarCube" format-version="2.37.3" ifid="A2C7DFC7-B99A-47C0-8EE8-133DF4A60DC6" options="" tags="" zoom="1" hidden><style role="stylesheet" id="twine-user-stylesheet" type="text/twine-css">button.twine-button {
-    width: 150px;        /* Sets a specific width for all buttons */
-    height: 50px;        /* Sets a specific height for all buttons */
+    width: 200px;        /* Ensures all buttons are the same width */
+    min-height: 50px;    /* Minimum height of buttons */
     padding: 10px;       /* Adds padding inside the buttons */
     font-size: 16px;     /* Sets the text size inside the buttons */
     text-align: center;  /* Centers the text inside the buttons */
-    margin: 5px;         /* Adds space around the buttons */
-    border: none;        /* Removes the border */
-    background-color: #f8f9fa; /* Light grey background */
-    color: black;        /* Text color */
+    margin: 5px auto;    /* Adds space around the buttons and centers them */
+    border: 1px solid #000; /* Adds a border */
+    background-color: #007bff; /* Sets background color */
+    color: white;        /* Sets text color */
     border-radius: 5px;  /* Rounded corners */
+    box-sizing: border-box; /* Includes padding and border in the width and height */
+    display: block;      /* Block display to take full width as set */
 }
 
 button.twine-button:hover {
-    background-color: #e2e3e5; /* Slightly darker grey on hover */
+    background-color: #0056b3; /* Darker blue on hover */
 }
+
 
 
 /* Mobile-Specific Styling */
