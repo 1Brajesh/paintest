@@ -104,7 +104,44 @@ var LZString=function(){var r=String.fromCharCode,o="ABCDEFGHIJKLMNOPQRSTUVWXYZa
 		<div id="init-lacking"><p>Browser lacks capabilities required to play.</p><p>Upgrade or switch to another browser.</p></div>
 		<div id="init-loading"><div>Loading&hellip;</div></div>
 	</div>
-	<tw-storydata name="Paintest" startnode="13" creator="Twine" creator-version="2.10.0" format="SugarCube" format-version="2.37.3" ifid="A2C7DFC7-B99A-47C0-8EE8-133DF4A60DC6" options="" tags="" zoom="1" hidden><style role="stylesheet" id="twine-user-stylesheet" type="text/twine-css">button.twine-button {
+	<tw-storydata name="Paintest" startnode="13" creator="Twine" creator-version="2.10.0" format="SugarCube" format-version="2.37.3" ifid="A2C7DFC7-B99A-47C0-8EE8-133DF4A60DC6" options="" tags="" zoom="1" hidden><style role="stylesheet" id="twine-user-stylesheet" type="text/twine-css">/* General Body Styling for Background */
+body {
+  background-image: url("pink-background.jpg");
+  background-size: cover; /* Ensures the image covers the entire viewport */
+  background-repeat: no-repeat; /* Prevents tiling */
+  background-attachment: fixed; /* Keeps the image in place while scrolling */
+  background-position: center; /* Centers the image */
+  margin: 0; /* Removes any default margin */
+  padding: 0; /* Removes any default padding */
+  min-height: 100vh; /* Ensures the background covers the full height of the viewport */
+}
+
+/* Styling the Passage Container */
+#passages {
+  background-color: rgba(255, 255, 255, 0.85); /* Semi-transparent white background for text readability */
+  border-radius: 10px; /* Rounded corners for a softer look */
+  padding: 20px;
+  margin: 10px auto; /* Centers the text container with some spacing on mobile */
+  max-width: 800px; /* Limits the width of the text container for desktop */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Adds a subtle shadow for better text focus */
+  overflow-wrap: break-word; /* Ensures long words don't break the layout */
+}
+
+/* Mobile-Specific Adjustments */
+@media screen and (max-width: 768px) {
+  body {
+    background-attachment: scroll; /* Disables fixed background on smaller devices for smoother scrolling */
+    background-size: auto 100%; /* Adjusts the background to fit vertically on smaller screens */
+  }
+
+  #passages {
+    padding: 15px; /* Reduces padding for smaller screens */
+    font-size: 16px; /* Adjusts text size for better readability on mobile */
+  }
+}
+
+
+button.twine-button {
     width: 200px !important;        /* Ensures all buttons are the same width */
     min-height: 50px !important;    /* Minimum height of buttons */
     padding: 10px !important;       /* Adds padding inside the buttons */
