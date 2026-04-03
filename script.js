@@ -169,7 +169,30 @@ const resultBands = [
   }
 ];
 
+const introSteps = [
+  {
+    label: "Welcome",
+    paragraphs: [
+      "This is an anonymous 10-question self-check.",
+      "This paintest is designed to help you explore whether a pain pattern may be neuroplastic.",
+      "Your answers stay in your browser. No identifying information is captured. No email is required."
+    ],
+    primaryAction: "Next"
+  },
+  {
+    label: "Before You Begin",
+    paragraphs: [
+      "This tool is for information only. It is not medical advice and it is not a replacement for seeing a doctor or licensed clinician.",
+      "Before acting on your score, make sure a doctor has checked for organic disease or another medical explanation.",
+      "If your score suggests it may help, the results screen will include a link to a free online book for further exploration."
+    ],
+    secondaryAction: "Back",
+    primaryAction: "Start the test"
+  }
+];
+
 const state = {
+  introIndex: 0,
   currentIndex: 0,
   answers: [],
   isTransitioning: false
@@ -265,6 +288,32 @@ function buildCheckboxGrid(question) {
   `;
 }
 
+function buildIntroMarkup() {
+  const introStep = introSteps[state.introIndex];
+  const introParagraphs = introStep.paragraphs
+    .map(
+      (paragraph, index) =>
+        `<p class="question-copy"${index === 0 ? ' data-focus-target tabindex="-1"' : ""}>${paragraph}</p>`
+    )
+    .join("");
+  const secondaryAction = introStep.secondaryAction
+    ? `<button class="ghost-button" type="button" id="introSecondaryButton">${introStep.secondaryAction}</button>`
+    : "";
+
+  return `
+    <article class="stage-card intro-card">
+      <p class="question-tag">${introStep.label}</p>
+      <div class="intro-copy-stack">
+        ${introParagraphs}
+      </div>
+      <div class="intro-actions">
+        ${secondaryAction}
+        <button class="continue-button" type="button" id="introPrimaryButton">${introStep.primaryAction}</button>
+      </div>
+    </article>
+  `;
+}
+
 function renderStage(markup, bindEvents, animate = true) {
   const swapContent = () => {
     stage.innerHTML = markup;
@@ -345,6 +394,38 @@ function handleAnswer(label, value) {
   }
 }
 
+function startQuiz() {
+  if (state.isTransitioning) {
+    return;
+  }
+
+  lockUi();
+  state.introIndex = 0;
+  state.currentIndex = 0;
+  state.answers = [];
+  renderQuestion();
+}
+
+function goToNextIntroStep() {
+  if (state.isTransitioning || state.introIndex >= introSteps.length - 1) {
+    return;
+  }
+
+  lockUi();
+  state.introIndex += 1;
+  renderIntro();
+}
+
+function goToPreviousIntroStep() {
+  if (state.isTransitioning || state.introIndex === 0) {
+    return;
+  }
+
+  lockUi();
+  state.introIndex -= 1;
+  renderIntro();
+}
+
 function renderQuestion(animate = true) {
   const question = questions[state.currentIndex];
 
@@ -368,6 +449,26 @@ function renderQuestion(animate = true) {
           handleAnswer(button.dataset.answerLabel, Number(button.dataset.answerValue));
         });
       });
+    },
+    animate
+  );
+}
+
+function renderIntro(animate = true) {
+  renderStage(
+    buildIntroMarkup(),
+    () => {
+      const introPrimaryButton = document.getElementById("introPrimaryButton");
+      const introSecondaryButton = document.getElementById("introSecondaryButton");
+
+      introPrimaryButton.addEventListener(
+        "click",
+        state.introIndex === introSteps.length - 1 ? startQuiz : goToNextIntroStep
+      );
+
+      if (introSecondaryButton) {
+        introSecondaryButton.addEventListener("click", goToPreviousIntroStep);
+      }
     },
     animate
   );
@@ -412,13 +513,14 @@ function restartQuiz() {
   }
 
   lockUi();
+  state.introIndex = 0;
   state.currentIndex = 0;
   state.answers = [];
-  renderQuestion();
+  renderIntro();
 }
 
 if (restartButton) {
   restartButton.addEventListener("click", restartQuiz);
 }
 
-renderQuestion(false);
+renderIntro(false);
