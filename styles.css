@@ -247,6 +247,7 @@ a {
   text-align: justify;
   text-align-last: center;
   hyphens: auto;
+  outline: none;
 }
 
 .question-tag,
