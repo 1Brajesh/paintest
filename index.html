@@ -7,112 +7,44 @@
     name="description"
     content="Paintest is a free, anonymous 10-question self-check for exploring whether a pain pattern may be neuroplastic."
   >
-  <meta name="theme-color" content="#f4e3d7">
-  <title>Paintest | 10-Question Self Check</title>
+  <meta name="theme-color" content="#f3eee8">
+  <title>Paintest</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="page-frame">
-    <main class="layout">
-      <section class="hero panel" aria-labelledby="site-title">
-        <p class="eyebrow">Paintest.org</p>
-        <h1 id="site-title">Ten questions. Immediate results. No signup required.</h1>
-        <p class="lede">
-          Paintest is a free, browser-based self-check for exploring whether a pain pattern may
-          be neuroplastic. This rebuild keeps the original scoring logic, but presents it as a
-          fast, responsive webpage that is easier to use on phone and desktop.
-        </p>
-
-        <div class="hero__actions">
-          <a class="primary-link" href="#quiz-panel">Start the questionnaire</a>
-          <a class="secondary-link" href="#score-bands">See score bands</a>
+  <main class="app-shell">
+    <section class="quiz-panel" aria-labelledby="quiz-title">
+      <header class="quiz-header">
+        <div class="brand-block">
+          <p class="brand-mark">Paintest</p>
+          <h1 id="quiz-title">10-question self-check</h1>
         </div>
+        <button class="ghost-button" id="restartButton" type="button">Restart</button>
+      </header>
 
-        <div class="hero__stats" aria-label="Highlights">
-          <article class="stat-card">
-            <span>10</span>
-            <p>questions scored instantly in your browser</p>
+      <div class="progress-meta" aria-label="Question progress">
+        <span class="progress-label" id="progressText">Question 1 of 10</span>
+        <span class="progress-note">Anonymous. Informational only.</span>
+      </div>
+
+      <div class="progress-track" aria-hidden="true">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+
+      <div class="quiz-stage" id="quizStage" aria-live="polite" aria-atomic="true">
+        <noscript>
+          <article class="stage-card">
+            <p class="question-tag">JavaScript required</p>
+            <h2 class="question-title">This questionnaire needs JavaScript enabled.</h2>
+            <p class="question-copy">
+              Paintest calculates your score in the browser, so the test appears once JavaScript
+              is available.
+            </p>
           </article>
-          <article class="stat-card">
-            <span>0</span>
-            <p>email forms, account walls, or waiting around</p>
-          </article>
-          <article class="stat-card">
-            <span>3</span>
-            <p>result bands: low, medium, and high</p>
-          </article>
-        </div>
-
-        <section class="scale-card" id="score-bands" aria-labelledby="score-bands-title">
-          <p class="eyebrow">Score Bands</p>
-          <h2 id="score-bands-title">How Paintest reads your score</h2>
-          <div class="scale-card__rows">
-            <div class="scale-row">
-              <strong>0-15</strong>
-              <p>Low score. The mind-body approach is less likely to be the main fit.</p>
-            </div>
-            <div class="scale-row">
-              <strong>16-28</strong>
-              <p>Medium score. Stress and tension may be contributing to symptoms.</p>
-            </div>
-            <div class="scale-row">
-              <strong>29-50</strong>
-              <p>High score. The pattern is strongly consistent with neuroplastic symptoms.</p>
-            </div>
-          </div>
-        </section>
-
-        <section class="notice-card" aria-labelledby="important-note-title">
-          <p class="eyebrow">Important</p>
-          <h2 id="important-note-title">This tool is informational only</h2>
-          <p>
-            It is not medical advice and it does not replace a licensed doctor. If symptoms are
-            ongoing, severe, or changing, get medical guidance before relying on any self-help
-            method.
-          </p>
-        </section>
-      </section>
-
-      <section class="quiz-shell panel" id="quiz-panel" aria-labelledby="quiz-title">
-        <div class="quiz-shell__header">
-          <div>
-            <p class="eyebrow">Self Check</p>
-            <h2 id="quiz-title">Neuroplastic pain questionnaire</h2>
-            <p class="quiz-shell__support">Your answers stay in this page and score instantly.</p>
-          </div>
-          <button class="ghost-button" id="restartButton" type="button">Start over</button>
-        </div>
-
-        <div class="scoreboard" aria-label="Progress and score">
-          <div class="score-pill">
-            <span>Answered</span>
-            <strong id="progressText">0 of 10</strong>
-          </div>
-          <div class="score-pill">
-            <span>Current score</span>
-            <strong id="scoreText">0</strong>
-          </div>
-        </div>
-
-        <div class="progress-track" aria-hidden="true">
-          <div class="progress-fill" id="progressFill"></div>
-        </div>
-
-        <div class="quiz-stage" id="quizStage" aria-live="polite" aria-atomic="true">
-          <noscript>
-            <div class="question-card">
-              <p class="step-label">JavaScript required</p>
-              <h3 class="question-title">This questionnaire needs JavaScript enabled.</h3>
-              <p class="question-copy">
-                The current Paintest rebuild calculates scores in the browser, so the questions
-                will appear once JavaScript is available.
-              </p>
-            </div>
-          </noscript>
-        </div>
-      </section>
-    </main>
-  </div>
+        </noscript>
+      </div>
+    </section>
+  </main>
 
   <script src="script.js" defer></script>
 </body>

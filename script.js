@@ -134,21 +134,21 @@ const resultBands = [
     key: "low",
     max: 15,
     label: "Low score",
-    headline: "The questionnaire does not strongly point to a neuroplastic pain pattern.",
+    headline: "This screen does not strongly suggest a neuroplastic pain pattern.",
     summary:
-      "You have a low score. Based on this questionnaire, it is less likely that the mind-body approach will be the main fit for your healing path.",
+      "Your score falls in the low range. Based on these answers, the mind-body approach is less likely to be the main explanation for your symptoms.",
     note:
-      "If symptoms continue, keep working with a licensed doctor or clinician to rule out other causes."
+      "If symptoms persist, continue working with a licensed doctor or clinician."
   },
   {
     key: "medium",
     max: 28,
     label: "Medium score",
-    headline: "Stress and tension may be contributing to your symptoms.",
+    headline: "Stress and tension may be part of the picture.",
     summary:
-      "You have a medium score, which means it is possible that the cause of your pain has a neuroplastic or stress-related component.",
+      "Your score falls in the medium range. A neuroplastic or stress-related component may be contributing to your symptoms.",
     note:
-      "Before pursuing mind-body methods, make sure a doctor has checked for organic disease or another medical explanation."
+      "Before acting on that possibility, make sure a doctor has checked for organic disease or another medical explanation."
   },
   {
     key: "high",
@@ -156,9 +156,9 @@ const resultBands = [
     label: "High score",
     headline: "Your answers are strongly consistent with a neuroplastic pain pattern.",
     summary:
-      "You have a high score. Based on this questionnaire, it is highly likely that stress and tension are meaningfully involved in your symptoms.",
+      "Your score falls in the high range. Stress and tension are likely playing a meaningful role in your symptoms.",
     note:
-      "If a doctor has already ruled out organic disease, you may want to explore the free online book linked below.",
+      "If a doctor has already ruled out organic disease, you may want to explore the free online book below.",
     cta: {
       label: "Open HealYourPa.in",
       href: "https://healyourpa.in"
@@ -168,14 +168,26 @@ const resultBands = [
 
 const state = {
   currentIndex: 0,
-  answers: []
+  answers: [],
+  isTransitioning: false
 };
 
 const stage = document.getElementById("quizStage");
 const progressText = document.getElementById("progressText");
-const scoreText = document.getElementById("scoreText");
 const progressFill = document.getElementById("progressFill");
 const restartButton = document.getElementById("restartButton");
+const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+const STAGE_TRANSITION_MS = 180;
+
+function lockUi() {
+  state.isTransitioning = true;
+  restartButton.disabled = true;
+}
+
+function unlockUi() {
+  state.isTransitioning = false;
+  restartButton.disabled = false;
+}
 
 function getScore() {
   return state.answers.reduce((total, answer) => total + answer.value, 0);
@@ -186,12 +198,13 @@ function getResultBand(score) {
 }
 
 function updateMeta() {
-  const answeredCount = state.answers.length;
-  const progress = (answeredCount / questions.length) * 100;
+  const isComplete = state.currentIndex >= questions.length;
+  const currentStep = isComplete ? questions.length : state.currentIndex + 1;
 
-  progressText.textContent = `${answeredCount} of ${questions.length}`;
-  scoreText.textContent = String(getScore());
-  progressFill.style.width = `${progress}%`;
+  progressText.textContent = isComplete
+    ? "Results"
+    : `Question ${currentStep} of ${questions.length}`;
+  progressFill.style.width = `${(currentStep / questions.length) * 100}%`;
 }
 
 function focusTitle() {
@@ -211,14 +224,41 @@ function renderDetails(details) {
   return `<ul class="detail-list">${items}</ul>`;
 }
 
-function renderQuestion() {
-  const question = questions[state.currentIndex];
+function renderStage(markup, bindEvents, animate = true) {
+  const swapContent = () => {
+    stage.innerHTML = markup;
+    bindEvents();
+    focusTitle();
+  };
 
-  stage.innerHTML = `
-    <article class="question-card">
-      <p class="step-label">Question ${state.currentIndex + 1} of ${questions.length}</p>
-      <h3 class="question-title" data-focus-target tabindex="-1">${question.title}</h3>
-      <p class="question-copy">${question.prompt}</p>
+  if (!animate || stage.children.length === 0 || prefersReducedMotion.matches) {
+    stage.classList.remove("is-leaving", "is-entering");
+    swapContent();
+    unlockUi();
+    return;
+  }
+
+  stage.classList.add("is-leaving");
+
+  window.setTimeout(() => {
+    swapContent();
+    stage.classList.remove("is-leaving");
+    stage.classList.add("is-entering");
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        stage.classList.remove("is-entering");
+        window.setTimeout(unlockUi, STAGE_TRANSITION_MS);
+      });
+    });
+  }, STAGE_TRANSITION_MS);
+}
+
+function buildQuestionMarkup(question) {
+  return `
+    <article class="stage-card">
+      <p class="question-tag">${question.title}</p>
+      <h2 class="question-title" data-focus-target tabindex="-1">${question.prompt}</h2>
       ${renderDetails(question.details)}
       <div class="answer-grid">
         ${question.options
@@ -226,7 +266,6 @@ function renderQuestion() {
             (option) => `
               <button class="answer-button" type="button" data-answer-value="${option.value}" data-answer-label="${option.label}">
                 <span class="answer-button__label">${option.label}</span>
-                <span class="answer-button__meta">Choose</span>
               </button>
             `
           )
@@ -234,81 +273,85 @@ function renderQuestion() {
       </div>
     </article>
   `;
+}
+
+function handleAnswer(label, value) {
+  if (state.isTransitioning) {
+    return;
+  }
+
+  lockUi();
 
   stage.querySelectorAll(".answer-button").forEach((button) => {
-    button.addEventListener("click", () => {
-      const value = Number(button.dataset.answerValue);
-      const label = button.dataset.answerLabel;
-
-      state.answers.push({
-        question: question.title,
-        label,
-        value
-      });
-
-      state.currentIndex += 1;
-      updateMeta();
-
-      if (state.currentIndex < questions.length) {
-        renderQuestion();
-      } else {
-        renderResult();
-      }
-    });
+    button.disabled = true;
   });
 
-  focusTitle();
+  state.answers.push({ label, value });
+  state.currentIndex += 1;
+  updateMeta();
+
+  if (state.currentIndex < questions.length) {
+    renderQuestion();
+  } else {
+    renderResult();
+  }
 }
 
-function renderAnswerSummary() {
-  return state.answers
-    .map(
-      (answer, index) => `
-        <li>
-          <strong>Question ${index + 1}</strong>
-          <span>${answer.label}</span>
-        </li>
-      `
-    )
-    .join("");
+function renderQuestion(animate = true) {
+  const question = questions[state.currentIndex];
+
+  renderStage(
+    buildQuestionMarkup(question),
+    () => {
+      stage.querySelectorAll(".answer-button").forEach((button) => {
+        button.addEventListener("click", () => {
+          handleAnswer(button.dataset.answerLabel, Number(button.dataset.answerValue));
+        });
+      });
+    },
+    animate
+  );
 }
 
-function renderResult() {
+function renderResult(animate = true) {
   const score = getScore();
   const result = getResultBand(score);
-  const scoreRange =
-    result.key === "low" ? "0-15" : result.key === "medium" ? "16-28" : "29-50";
   const primaryAction = result.cta
     ? `<a class="result-link" href="${result.cta.href}" target="_blank" rel="noreferrer">${result.cta.label}</a>`
     : "";
 
-  stage.innerHTML = `
-    <article class="result-card">
-      <span class="result-badge ${result.key}">${result.label}</span>
-      <h3 class="result-title" data-focus-target tabindex="-1">${result.headline}</h3>
-      <div class="result-score">
-        ${score}
-        <small>Score band: ${scoreRange}</small>
-      </div>
-      <p class="result-copy">${result.summary}</p>
-      <p class="result-note">${result.note}</p>
-      <div class="result-actions">
-        ${primaryAction}
-        <button class="result-button" type="button" id="resultRestartButton">Take the test again</button>
-      </div>
-      <ul class="answer-summary" aria-label="Your answers">
-        ${renderAnswerSummary()}
-      </ul>
-    </article>
-  `;
+  renderStage(
+    `
+      <article class="stage-card">
+        <span class="result-badge ${result.key}">${result.label}</span>
+        <h2 class="result-title" data-focus-target tabindex="-1">${result.headline}</h2>
+        <div class="result-score">
+          ${score}
+          <small>out of 50</small>
+        </div>
+        <p class="result-copy">${result.summary}</p>
+        <p class="result-note">${result.note}</p>
+        <div class="result-actions">
+          ${primaryAction}
+          <button class="result-button" type="button" id="resultRestartButton">Take the test again</button>
+        </div>
+      </article>
+    `,
+    () => {
+      const resultRestartButton = document.getElementById("resultRestartButton");
 
-  const resultRestartButton = document.getElementById("resultRestartButton");
-  resultRestartButton.addEventListener("click", restartQuiz);
-
-  focusTitle();
+      resultRestartButton.addEventListener("click", restartQuiz);
+    },
+    animate
+  );
 }
 
 function restartQuiz() {
+  if (state.isTransitioning) {
+    return;
+  }
+
+  lockUi();
   state.currentIndex = 0;
   state.answers = [];
   updateMeta();
@@ -318,4 +361,4 @@ function restartQuiz() {
 restartButton.addEventListener("click", restartQuiz);
 
 updateMeta();
-renderQuestion();
+renderQuestion(false);
