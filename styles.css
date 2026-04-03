@@ -121,6 +121,18 @@ a {
   z-index: 1;
 }
 
+/* Hide retired UI if a stale cached HTML shell is mixed with newer assets. */
+.font-preview,
+.color-preview,
+.font-picker,
+.color-picker,
+.quiz-header,
+.progress-meta,
+.quiz-panel > .progress-track,
+.quiz-panel > .progress-shell {
+  display: none !important;
+}
+
 .ghost-button,
 .answer-button,
 .result-button,
