@@ -60,6 +60,12 @@ const questions = [
   {
     title: "Question 7",
     prompt: "Do you have any history of gastrointestinal or other tension-related problems such as:",
+    selectionMode: "checkbox-grid",
+    selectionScoring: [
+      { min: 2, label: "Two or more", value: 5 },
+      { min: 1, label: "One", value: 3 },
+      { min: 0, label: "None", value: 0 }
+    ],
     details: [
       "IBS",
       "Constipation",
@@ -70,16 +76,17 @@ const questions = [
       "Hives",
       "Eczema",
       "Any other tension-related issues"
-    ],
-    options: [
-      { label: "Two or more", value: 5 },
-      { label: "One", value: 3 },
-      { label: "None", value: 0 }
     ]
   },
   {
     title: "Question 8",
     prompt: "Have you tried other methods of treating your pain such as:",
+    selectionMode: "checkbox-grid",
+    selectionScoring: [
+      { min: 2, label: "Two or more", value: 5 },
+      { min: 1, label: "One", value: 3 },
+      { min: 0, label: "None", value: 0 }
+    ],
     details: [
       "Surgery",
       "Drugs",
@@ -91,11 +98,6 @@ const questions = [
       "Yoga",
       "Meditation",
       "Anything else not included in this list"
-    ],
-    options: [
-      { label: "Two or more", value: 5 },
-      { label: "One", value: 3 },
-      { label: "None", value: 0 }
     ]
   },
   {
@@ -110,6 +112,12 @@ const questions = [
   {
     title: "Question 10",
     prompt: "Do you have any of the following traits:",
+    selectionMode: "checkbox-grid",
+    selectionScoring: [
+      { min: 4, label: "Four or more", value: 5 },
+      { min: 1, label: "One to three", value: 3 },
+      { min: 0, label: "None", value: 0 }
+    ],
     details: [
       "Dependable",
       "Controlling",
@@ -120,11 +128,6 @@ const questions = [
       "People pleaser",
       "Compulsive",
       "Hard on yourself"
-    ],
-    options: [
-      { label: "Four or more", value: 5 },
-      { label: "One to three", value: 3 },
-      { label: "None", value: 0 }
     ]
   }
 ];
@@ -173,20 +176,24 @@ const state = {
 };
 
 const stage = document.getElementById("quizStage");
-const progressText = document.getElementById("progressText");
-const progressFill = document.getElementById("progressFill");
 const restartButton = document.getElementById("restartButton");
 const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 const STAGE_TRANSITION_MS = 180;
 
 function lockUi() {
   state.isTransitioning = true;
-  restartButton.disabled = true;
+
+  if (restartButton) {
+    restartButton.disabled = true;
+  }
 }
 
 function unlockUi() {
   state.isTransitioning = false;
-  restartButton.disabled = false;
+
+  if (restartButton) {
+    restartButton.disabled = false;
+  }
 }
 
 function getScore() {
@@ -197,14 +204,18 @@ function getResultBand(score) {
   return resultBands.find((band) => score <= band.max);
 }
 
-function updateMeta() {
-  const isComplete = state.currentIndex >= questions.length;
-  const currentStep = isComplete ? questions.length : state.currentIndex + 1;
+function buildQuestionProgress() {
+  const progress = ((state.currentIndex + 1) / questions.length) * 100;
+  const percentLabel = progress < 100 ? `<span class="progress-percent">${progress}%</span>` : "";
 
-  progressText.textContent = isComplete
-    ? "Results"
-    : `Question ${currentStep} of ${questions.length}`;
-  progressFill.style.width = `${(currentStep / questions.length) * 100}%`;
+  return `
+    <div class="progress-shell stage-progress" aria-hidden="true" style="--progress: ${progress}%;">
+      <div class="progress-track">
+        <div class="progress-fill"></div>
+        ${percentLabel}
+      </div>
+    </div>
+  `;
 }
 
 function focusTitle() {
@@ -222,6 +233,36 @@ function renderDetails(details) {
 
   const items = details.map((item) => `<li>${item}</li>`).join("");
   return `<ul class="detail-list">${items}</ul>`;
+}
+
+function getCheckboxAnswer(question, selectedCount) {
+  return question.selectionScoring.find((option) => selectedCount >= option.min);
+}
+
+function buildCheckboxGrid(question) {
+  const choices = question.details
+    .map(
+      (item, index) => `
+        <label class="checkbox-card">
+          <input class="checkbox-input" type="checkbox" value="${item}" data-choice-index="${index}">
+          <span class="checkbox-card__content">
+            <span class="checkbox-mark" aria-hidden="true"></span>
+            <span class="checkbox-label">${item}</span>
+          </span>
+        </label>
+      `
+    )
+    .join("");
+
+  return `
+    <p class="question-copy">Select all that apply.</p>
+    <div class="checkbox-grid" role="group" aria-label="${question.title} choices">
+      ${choices}
+    </div>
+    <div class="question-actions">
+      <button class="continue-button" type="button" id="multiSelectContinue">Continue</button>
+    </div>
+  `;
 }
 
 function renderStage(markup, bindEvents, animate = true) {
@@ -255,22 +296,30 @@ function renderStage(markup, bindEvents, animate = true) {
 }
 
 function buildQuestionMarkup(question) {
+  const answerMarkup =
+    question.selectionMode === "checkbox-grid"
+      ? buildCheckboxGrid(question)
+      : `
+          <div class="answer-grid">
+            ${question.options
+              .map(
+                (option) => `
+                  <button class="answer-button" type="button" data-answer-value="${option.value}" data-answer-label="${option.label}">
+                    <span class="answer-button__label">${option.label}</span>
+                  </button>
+                `
+              )
+              .join("")}
+          </div>
+        `;
+
   return `
     <article class="stage-card">
       <p class="question-tag">${question.title}</p>
+      ${buildQuestionProgress()}
       <h2 class="question-title" data-focus-target tabindex="-1">${question.prompt}</h2>
-      ${renderDetails(question.details)}
-      <div class="answer-grid">
-        ${question.options
-          .map(
-            (option) => `
-              <button class="answer-button" type="button" data-answer-value="${option.value}" data-answer-label="${option.label}">
-                <span class="answer-button__label">${option.label}</span>
-              </button>
-            `
-          )
-          .join("")}
-      </div>
+      ${question.selectionMode === "checkbox-grid" ? "" : renderDetails(question.details)}
+      ${answerMarkup}
     </article>
   `;
 }
@@ -282,13 +331,12 @@ function handleAnswer(label, value) {
 
   lockUi();
 
-  stage.querySelectorAll(".answer-button").forEach((button) => {
-    button.disabled = true;
+  stage.querySelectorAll("button, input").forEach((element) => {
+    element.disabled = true;
   });
 
   state.answers.push({ label, value });
   state.currentIndex += 1;
-  updateMeta();
 
   if (state.currentIndex < questions.length) {
     renderQuestion();
@@ -303,6 +351,18 @@ function renderQuestion(animate = true) {
   renderStage(
     buildQuestionMarkup(question),
     () => {
+      if (question.selectionMode === "checkbox-grid") {
+        const continueButton = document.getElementById("multiSelectContinue");
+
+        continueButton.addEventListener("click", () => {
+          const selectedCount = stage.querySelectorAll(".checkbox-input:checked").length;
+          const answer = getCheckboxAnswer(question, selectedCount);
+
+          handleAnswer(answer.label, answer.value);
+        });
+        return;
+      }
+
       stage.querySelectorAll(".answer-button").forEach((button) => {
         button.addEventListener("click", () => {
           handleAnswer(button.dataset.answerLabel, Number(button.dataset.answerValue));
@@ -354,11 +414,11 @@ function restartQuiz() {
   lockUi();
   state.currentIndex = 0;
   state.answers = [];
-  updateMeta();
   renderQuestion();
 }
 
-restartButton.addEventListener("click", restartQuiz);
+if (restartButton) {
+  restartButton.addEventListener("click", restartQuiz);
+}
 
-updateMeta();
 renderQuestion(false);

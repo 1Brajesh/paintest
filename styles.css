@@ -10,6 +10,8 @@
   --accent-soft: rgba(29, 107, 99, 0.11);
   --warm: #a26646;
   --warm-soft: rgba(162, 102, 70, 0.11);
+  --glow-a: rgba(29, 107, 99, 0.18);
+  --glow-b: rgba(162, 102, 70, 0.18);
   --shadow: 0 28px 80px rgba(59, 43, 34, 0.14);
   --radius-xl: 30px;
   --radius-lg: 22px;
@@ -55,7 +57,7 @@ body::before {
   width: 24rem;
   height: 24rem;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(29, 107, 99, 0.18), transparent 68%);
+  background: radial-gradient(circle, var(--glow-a), transparent 68%);
 }
 
 body::after {
@@ -64,13 +66,13 @@ body::after {
   width: 28rem;
   height: 28rem;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(162, 102, 70, 0.18), transparent 68%);
+  background: radial-gradient(circle, var(--glow-b), transparent 68%);
 }
 
 h1,
 h2 {
   margin: 0;
-  font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+  font-family: "Cormorant Garamond", "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
   font-weight: 600;
   letter-spacing: -0.02em;
 }
@@ -112,38 +114,11 @@ a {
 }
 
 .quiz-header,
-.progress-meta,
 .stage-card,
 .answer-grid,
 .result-actions {
   position: relative;
   z-index: 1;
-}
-
-.quiz-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-}
-
-.brand-block {
-  display: grid;
-  gap: 0.35rem;
-}
-
-.brand-mark {
-  font-size: 0.72rem;
-  font-weight: 800;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--accent);
-}
-
-#quiz-title {
-  font-size: clamp(1.95rem, 4.6vw, 3.05rem);
-  line-height: 1.02;
 }
 
 .ghost-button,
@@ -168,44 +143,9 @@ a {
   cursor: pointer;
 }
 
-.progress-meta {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-bottom: 0.8rem;
-}
-
-.progress-label {
-  font-size: 0.98rem;
-  font-weight: 700;
-}
-
-.progress-note {
-  font-size: 0.92rem;
-  color: var(--muted);
-}
-
-.progress-track {
-  position: relative;
-  z-index: 1;
-  height: 0.55rem;
-  overflow: hidden;
-  border-radius: 999px;
-  background: rgba(32, 28, 26, 0.08);
-}
-
-.progress-fill {
-  width: 0;
-  height: 100%;
-  border-radius: inherit;
-  background: linear-gradient(90deg, var(--accent), #287d74 55%, var(--warm));
-  transition: width 0.28s ease;
-}
-
 .quiz-stage {
   min-height: 29rem;
-  margin-top: 1.6rem;
+  margin-top: 0.2rem;
   opacity: 1;
   transform: translateY(0);
   transition: opacity var(--transition), transform var(--transition);
@@ -221,6 +161,41 @@ a {
   transform: translateY(-8px);
 }
 
+.progress-shell {
+  position: relative;
+}
+
+.progress-track {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 0.8rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(32, 28, 26, 0.08);
+}
+
+.progress-fill {
+  width: var(--progress);
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--accent), #287d74 55%, var(--warm));
+  transition: width 0.28s ease;
+}
+
+.progress-percent {
+  position: absolute;
+  top: 50%;
+  left: clamp(2.3rem, calc(var(--progress) + 1.4rem), calc(100% - 1.6rem));
+  min-width: 3ch;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--ink);
+  text-align: center;
+  transform: translate(-50%, -50%);
+  transition: left 0.28s ease;
+}
+
 .stage-card {
   display: grid;
   gap: 1.15rem;
@@ -230,18 +205,27 @@ a {
 .result-badge {
   display: inline-flex;
   width: fit-content;
-  padding: 0.45rem 0.75rem;
+  align-self: center;
+  justify-self: center;
+  padding: 0.65rem 1.1rem;
   border-radius: 999px;
   border: 1px solid transparent;
-  font-size: 0.72rem;
-  font-weight: 800;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  font-family: "Cormorant Garamond", "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+  font-size: clamp(1.7rem, 3.8vw, 2.55rem);
+  font-weight: 600;
+  letter-spacing: 0;
+  line-height: 1.15;
+  text-transform: none;
 }
 
 .question-tag {
   background: var(--accent-soft);
   color: var(--accent);
+}
+
+.stage-progress {
+  margin-top: -0.2rem;
+  margin-bottom: 0.35rem;
 }
 
 .question-title,
@@ -272,6 +256,115 @@ a {
   display: grid;
   gap: 0.8rem;
   margin-top: 0.2rem;
+}
+
+.checkbox-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.8rem;
+  margin-top: 0.2rem;
+}
+
+.checkbox-card {
+  position: relative;
+  display: block;
+  cursor: pointer;
+}
+
+.checkbox-input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.checkbox-card__content {
+  display: grid;
+  grid-template-columns: 1.2rem 1fr;
+  align-items: start;
+  gap: 0.85rem;
+  min-height: 4.2rem;
+  padding: 1rem 1.05rem;
+  border: 1px solid rgba(48, 41, 37, 0.12);
+  border-radius: var(--radius-md);
+  background: var(--panel-strong);
+  transition:
+    transform var(--transition),
+    background-color var(--transition),
+    border-color var(--transition),
+    box-shadow var(--transition);
+}
+
+.checkbox-mark {
+  position: relative;
+  width: 1.2rem;
+  height: 1.2rem;
+  margin-top: 0.05rem;
+  border: 1.5px solid rgba(29, 107, 99, 0.38);
+  border-radius: 0.35rem;
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.checkbox-mark::after {
+  content: "";
+  position: absolute;
+  left: 0.27rem;
+  top: 0.08rem;
+  width: 0.32rem;
+  height: 0.62rem;
+  border-right: 2px solid #ffffff;
+  border-bottom: 2px solid #ffffff;
+  opacity: 0;
+  transform: rotate(38deg);
+}
+
+.checkbox-label {
+  color: var(--ink);
+  font-size: 0.98rem;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.checkbox-input:checked + .checkbox-card__content {
+  border-color: rgba(29, 107, 99, 0.28);
+  background: linear-gradient(180deg, rgba(29, 107, 99, 0.08), rgba(255, 255, 255, 0.96));
+  box-shadow: 0 14px 30px rgba(58, 43, 34, 0.08);
+}
+
+.checkbox-input:checked + .checkbox-card__content .checkbox-mark {
+  border-color: var(--accent);
+  background: var(--accent);
+}
+
+.checkbox-input:checked + .checkbox-card__content .checkbox-mark::after {
+  opacity: 1;
+}
+
+.checkbox-input:focus-visible + .checkbox-card__content,
+.checkbox-card:hover .checkbox-card__content {
+  transform: translateY(-1px);
+  border-color: rgba(29, 107, 99, 0.22);
+  box-shadow: 0 14px 30px rgba(58, 43, 34, 0.06);
+}
+
+.question-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0.3rem;
+}
+
+.continue-button {
+  min-height: 3rem;
+  padding: 0.85rem 1.35rem;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--accent), #287d74);
+  color: #f6fffd;
+  box-shadow: 0 14px 30px rgba(15, 109, 104, 0.18);
+  cursor: pointer;
+  transition:
+    transform var(--transition),
+    box-shadow var(--transition),
+    opacity var(--transition);
 }
 
 .answer-button {
@@ -308,6 +401,8 @@ a {
 .answer-button:focus-visible,
 .ghost-button:hover,
 .ghost-button:focus-visible,
+.continue-button:hover,
+.continue-button:focus-visible,
 .result-button:hover,
 .result-button:focus-visible,
 .result-link:hover,
@@ -325,6 +420,7 @@ a {
 
 .answer-button:disabled,
 .ghost-button:disabled,
+.continue-button:disabled,
 .result-button:disabled {
   cursor: default;
   opacity: 0.62;
@@ -405,18 +501,20 @@ a {
     border-radius: 24px;
   }
 
-  .quiz-header,
-  .progress-meta {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .ghost-button {
-    width: 100%;
-  }
-
   .quiz-stage {
     min-height: 0;
+  }
+
+  .checkbox-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .question-actions {
+    justify-content: stretch;
+  }
+
+  .continue-button {
+    width: 100%;
   }
 }
 

@@ -9,28 +9,17 @@
   >
   <meta name="theme-color" content="#f3eee8">
   <title>Paintest</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&display=swap"
+    rel="stylesheet"
+  >
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <main class="app-shell">
-    <section class="quiz-panel" aria-labelledby="quiz-title">
-      <header class="quiz-header">
-        <div class="brand-block">
-          <p class="brand-mark">Paintest</p>
-          <h1 id="quiz-title">10-question self-check</h1>
-        </div>
-        <button class="ghost-button" id="restartButton" type="button">Restart</button>
-      </header>
-
-      <div class="progress-meta" aria-label="Question progress">
-        <span class="progress-label" id="progressText">Question 1 of 10</span>
-        <span class="progress-note">Anonymous. Informational only.</span>
-      </div>
-
-      <div class="progress-track" aria-hidden="true">
-        <div class="progress-fill" id="progressFill"></div>
-      </div>
-
+    <section class="quiz-panel" aria-label="Paintest questionnaire">
       <div class="quiz-stage" id="quizStage" aria-live="polite" aria-atomic="true">
         <noscript>
           <article class="stage-card">
