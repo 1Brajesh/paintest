@@ -103,6 +103,21 @@ a {
   backdrop-filter: blur(18px);
 }
 
+.quiz-brand {
+  padding-bottom: 1rem;
+  margin-bottom: 0.4rem;
+  border-bottom: 1px solid var(--line);
+  text-align: center;
+}
+
+.quiz-brand__name {
+  font-family: "Cormorant Garamond", "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+  font-size: 1.35rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+
 .quiz-panel::before {
   content: "";
   position: absolute;
@@ -291,6 +306,15 @@ a {
   color: var(--muted);
   line-height: 1.65;
   font-size: 1rem;
+}
+
+.question-instruction {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--accent);
 }
 
 .detail-list {
@@ -505,6 +529,13 @@ a {
   line-height: 0.92;
 }
 
+.result-range {
+  margin: -0.4rem 0 0;
+  font-size: 0.78rem;
+  color: var(--muted);
+  text-align: center;
+}
+
 .result-score small {
   font-family: "Avenir Next", "Segoe UI", "Helvetica Neue", sans-serif;
   font-size: 1rem;
@@ -515,6 +546,7 @@ a {
 .result-actions {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: 0.75rem;
   margin-top: 0.2rem;
 }
@@ -539,6 +571,59 @@ a {
   border: 1px solid var(--line);
   background: rgba(255, 255, 255, 0.84);
   color: var(--ink);
+}
+
+.book-rec {
+  display: grid;
+  gap: 0.55rem;
+  width: 100%;
+  padding: 1.35rem 1.6rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--panel-strong);
+  text-align: center;
+}
+
+.book-rec__eyebrow {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.book-rec__title {
+  margin: 0;
+  font-family: "Cormorant Garamond", "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+  font-size: clamp(1.25rem, 3vw, 1.6rem);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+  color: var(--ink);
+}
+
+.book-rec__link {
+  display: inline-block;
+  margin-top: 0.3rem;
+  padding: 0.7rem 1.3rem;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--accent), #287d74);
+  color: #f6fffd;
+  font-size: 0.92rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition:
+    transform var(--transition),
+    box-shadow var(--transition);
+}
+
+.book-rec__link:hover,
+.book-rec__link:focus-visible {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 30px rgba(15, 109, 104, 0.22);
+  outline: none;
 }
 
 @media (max-width: 680px) {

@@ -137,7 +137,7 @@ const resultBands = [
     key: "low",
     max: 15,
     label: "Low score",
-    headline: "This screen does not strongly suggest a neuroplastic pain pattern.",
+    headline: "Your answers do not strongly suggest a neuroplastic pain pattern.",
     summary:
       "Your score falls in the low range. Based on these answers, the mind-body approach is less likely to be the main explanation for your symptoms.",
     note:
@@ -161,10 +161,10 @@ const resultBands = [
     summary:
       "Your score falls in the high range. Stress and tension are likely playing a meaningful role in your symptoms.",
     note:
-      "If a doctor has already ruled out organic disease, you may want to explore the free online book below.",
-    cta: {
-      label: "Open HealYourPa.in",
-      href: "https://healyourpa.in"
+      "If a doctor has already ruled out organic disease, the book below is often a helpful place to start.",
+    book: {
+      title: "The Straw That Broke the Camel's Back",
+      href: "https://www.amazon.com/Straw-That-Broke-Camels-Back-ebook/dp/B0BKTQWWC9/ref=tmm_kin_swatch_0"
     }
   }
 ];
@@ -172,22 +172,30 @@ const resultBands = [
 const introSteps = [
   {
     label: "Welcome",
+    trackPath: "/intro/welcome",
     paragraphs: [
-      "This is an anonymous 10-question self-check.",
-      "This paintest is designed to help you explore whether a pain pattern may be neuroplastic.",
-      "Your answers stay in your browser. No identifying information is captured. No email is required."
+      "Welcome to this page. I may be able to help you heal yourself from chronic pain without drugs, surgery or physical therapy. You can find out by taking this anonymous 10-question self-check.",
+      "Your answers stay in your browser. No identifying information is captured. You get a score right away. No email is required."
     ],
     primaryAction: "Next"
   },
   {
     label: "Before You Begin",
+    trackPath: "/intro/before-you-begin",
     paragraphs: [
       "This tool is for information only. It is not medical advice and it is not a replacement for seeing a doctor or licensed clinician.",
       "Before acting on your score, make sure a doctor has checked for organic disease or another medical explanation.",
-      "If your score suggests it may help, the results screen will include a link to a free online book for further exploration."
+      "If your score suggests it may help, the results screen will include a book recommendation."
     ],
-    secondaryAction: "Back",
-    primaryAction: "Start the test"
+    gateQuestion: "Have you seen a licensed medical doctor about your condition?",
+    secondaryAction: "Back"
+  },
+  {
+    label: "One More Thing",
+    trackPath: "/intro/one-more-thing",
+    gateQuestion: "Is your chronic pain or condition life-threatening?",
+    gateYesAborts: true,
+    secondaryAction: "Back"
   }
 ];
 
@@ -227,15 +235,25 @@ function getResultBand(score) {
   return resultBands.find((band) => score <= band.max);
 }
 
+function trackPage(path) {
+  if (window.goatcounter && window.goatcounter.count) {
+    window.goatcounter.count({ path: path });
+  } else {
+    setTimeout(function () {
+      if (window.goatcounter && window.goatcounter.count) {
+        window.goatcounter.count({ path: path });
+      }
+    }, 2000);
+  }
+}
+
 function buildQuestionProgress() {
   const progress = ((state.currentIndex + 1) / questions.length) * 100;
-  const percentLabel = progress < 100 ? `<span class="progress-percent">${progress}%</span>` : "";
 
   return `
     <div class="progress-shell stage-progress" aria-hidden="true" style="--progress: ${progress}%;">
       <div class="progress-track">
         <div class="progress-fill"></div>
-        ${percentLabel}
       </div>
     </div>
   `;
@@ -278,7 +296,7 @@ function buildCheckboxGrid(question) {
     .join("");
 
   return `
-    <p class="question-copy">Select all that apply.</p>
+    <p class="question-instruction">Select all that apply</p>
     <div class="checkbox-grid" role="group" aria-label="${question.title} choices">
       ${choices}
     </div>
@@ -291,21 +309,46 @@ function buildCheckboxGrid(question) {
 function buildIntroMarkup() {
   const introStep = introSteps[state.introIndex];
   const introParagraphs = introStep.paragraphs
-    .map(
-      (paragraph, index) =>
-        `<p class="question-copy"${index === 0 ? ' data-focus-target tabindex="-1"' : ""}>${paragraph}</p>`
-    )
-    .join("");
+    ? introStep.paragraphs
+        .map(
+          (paragraph, index) =>
+            `<p class="question-copy"${index === 0 && !introStep.gateQuestion ? ' data-focus-target tabindex="-1"' : ""}>${paragraph}</p>`
+        )
+        .join("")
+    : "";
+  const copyStack = introParagraphs
+    ? `<div class="intro-copy-stack">${introParagraphs}</div>`
+    : "";
   const secondaryAction = introStep.secondaryAction
     ? `<button class="ghost-button" type="button" id="introSecondaryButton">${introStep.secondaryAction}</button>`
     : "";
 
+  if (introStep.gateQuestion) {
+    const yesButton = introStep.gateYesAborts
+      ? `<button class="ghost-button" type="button" id="gateYesButton">Yes</button>`
+      : `<button class="continue-button" type="button" id="gateYesButton">Yes</button>`;
+    const noButton = introStep.gateYesAborts
+      ? `<button class="continue-button" type="button" id="gateNoButton">No</button>`
+      : `<button class="ghost-button" type="button" id="gateNoButton">No</button>`;
+
+    return `
+      <article class="stage-card intro-card">
+        <p class="question-tag">${introStep.label}</p>
+        ${copyStack}
+        <h2 class="question-title" data-focus-target tabindex="-1">${introStep.gateQuestion}</h2>
+        <div class="intro-actions">
+          ${secondaryAction}
+          ${yesButton}
+          ${noButton}
+        </div>
+      </article>
+    `;
+  }
+
   return `
     <article class="stage-card intro-card">
       <p class="question-tag">${introStep.label}</p>
-      <div class="intro-copy-stack">
-        ${introParagraphs}
-      </div>
+      ${copyStack}
       <div class="intro-actions">
         ${secondaryAction}
         <button class="continue-button" type="button" id="introPrimaryButton">${introStep.primaryAction}</button>
@@ -345,9 +388,16 @@ function renderStage(markup, bindEvents, animate = true) {
 }
 
 function buildQuestionMarkup(question) {
+  const navMarkup = `
+    <div class="intro-actions">
+      <button class="ghost-button" type="button" id="questionBackButton">Back</button>
+      <button class="ghost-button" type="button" id="questionRestartButton">Restart</button>
+    </div>
+  `;
+
   const answerMarkup =
     question.selectionMode === "checkbox-grid"
-      ? buildCheckboxGrid(question)
+      ? buildCheckboxGrid(question) + navMarkup
       : `
           <div class="answer-grid">
             ${question.options
@@ -360,6 +410,7 @@ function buildQuestionMarkup(question) {
               )
               .join("")}
           </div>
+          ${navMarkup}
         `;
 
   return `
@@ -426,7 +477,21 @@ function goToPreviousIntroStep() {
   renderIntro();
 }
 
+function goBackFromQuestion() {
+  if (state.isTransitioning) return;
+  lockUi();
+  if (state.currentIndex === 0) {
+    state.introIndex = introSteps.length - 1;
+    renderIntro();
+  } else {
+    state.currentIndex -= 1;
+    state.answers.pop();
+    renderQuestion();
+  }
+}
+
 function renderQuestion(animate = true) {
+  trackPage(`/question/${state.currentIndex + 1}`);
   const question = questions[state.currentIndex];
 
   renderStage(
@@ -441,30 +506,110 @@ function renderQuestion(animate = true) {
 
           handleAnswer(answer.label, answer.value);
         });
-        return;
+      } else {
+        stage.querySelectorAll(".answer-button").forEach((button) => {
+          button.addEventListener("click", () => {
+            handleAnswer(button.dataset.answerLabel, Number(button.dataset.answerValue));
+          });
+        });
       }
 
-      stage.querySelectorAll(".answer-button").forEach((button) => {
-        button.addEventListener("click", () => {
-          handleAnswer(button.dataset.answerLabel, Number(button.dataset.answerValue));
-        });
-      });
+      document.getElementById("questionBackButton").addEventListener("click", goBackFromQuestion);
+      document.getElementById("questionRestartButton").addEventListener("click", restartQuiz);
     },
     animate
   );
 }
 
+function renderBlocked() {
+  trackPage('/screened/no-doctor');
+  renderStage(
+    `
+      <article class="stage-card intro-card">
+        <p class="question-tag">Sorry...</p>
+        <div class="intro-copy-stack">
+          <p class="question-copy" data-focus-target tabindex="-1">This test is designed for people who have already seen a licensed medical doctor about their condition.</p>
+          <p class="question-copy">Please get a medical evaluation first. Once a doctor has assessed your condition, come back and take the test.</p>
+        </div>
+        <div class="intro-actions">
+          <button class="ghost-button" type="button" id="blockedBackButton">Back</button>
+          <button class="ghost-button" type="button" id="blockedRestartButton">Start over</button>
+        </div>
+      </article>
+    `,
+    () => {
+      document.getElementById("blockedBackButton").addEventListener("click", () => {
+        if (state.isTransitioning) return;
+        lockUi();
+        renderIntro();
+      });
+      document.getElementById("blockedRestartButton").addEventListener("click", restartQuiz);
+    }
+  );
+}
+
+function renderAborted() {
+  trackPage('/screened/life-threatening');
+  renderStage(
+    `
+      <article class="stage-card intro-card">
+        <p class="question-tag">Not Recommended</p>
+        <div class="intro-copy-stack">
+          <p class="question-copy" data-focus-target tabindex="-1">This test is only recommended for non-life-threatening conditions.</p>
+          <p class="question-copy">If your condition may be life-threatening, please seek immediate medical attention. Do not rely on self-assessment tools for serious medical concerns.</p>
+        </div>
+        <div class="intro-actions">
+          <button class="ghost-button" type="button" id="abortedBackButton">Back</button>
+          <button class="ghost-button" type="button" id="abortedRestartButton">Start over</button>
+        </div>
+      </article>
+    `,
+    () => {
+      document.getElementById("abortedBackButton").addEventListener("click", () => {
+        if (state.isTransitioning) return;
+        lockUi();
+        renderIntro();
+      });
+      document.getElementById("abortedRestartButton").addEventListener("click", restartQuiz);
+    }
+  );
+}
+
 function renderIntro(animate = true) {
+  trackPage(introSteps[state.introIndex].trackPath);
   renderStage(
     buildIntroMarkup(),
     () => {
-      const introPrimaryButton = document.getElementById("introPrimaryButton");
+      const introStep = introSteps[state.introIndex];
       const introSecondaryButton = document.getElementById("introSecondaryButton");
 
-      introPrimaryButton.addEventListener(
-        "click",
-        state.introIndex === introSteps.length - 1 ? startQuiz : goToNextIntroStep
-      );
+      if (introStep.gateQuestion) {
+        document.getElementById("gateYesButton").addEventListener("click", () => {
+          if (state.isTransitioning) return;
+          if (introStep.gateYesAborts) {
+            lockUi();
+            renderAborted();
+          } else {
+            goToNextIntroStep();
+          }
+        });
+
+        document.getElementById("gateNoButton").addEventListener("click", () => {
+          if (state.isTransitioning) return;
+          if (introStep.gateYesAborts) {
+            startQuiz();
+          } else {
+            lockUi();
+            renderBlocked();
+          }
+        });
+      } else {
+        const introPrimaryButton = document.getElementById("introPrimaryButton");
+        introPrimaryButton.addEventListener(
+          "click",
+          state.introIndex === introSteps.length - 1 ? startQuiz : goToNextIntroStep
+        );
+      }
 
       if (introSecondaryButton) {
         introSecondaryButton.addEventListener("click", goToPreviousIntroStep);
@@ -474,11 +619,26 @@ function renderIntro(animate = true) {
   );
 }
 
+function goBackFromResult() {
+  if (state.isTransitioning) return;
+  lockUi();
+  state.currentIndex = questions.length - 1;
+  state.answers.pop();
+  renderQuestion();
+}
+
 function renderResult(animate = true) {
   const score = getScore();
   const result = getResultBand(score);
-  const primaryAction = result.cta
-    ? `<a class="result-link" href="${result.cta.href}" target="_blank" rel="noreferrer">${result.cta.label}</a>`
+  trackPage(`/result/${result.key}`);
+  const bookRec = result.book
+    ? `
+        <div class="book-rec">
+          <p class="book-rec__eyebrow">Recommended reading</p>
+          <p class="book-rec__title">${result.book.title}</p>
+          <a class="book-rec__link" id="resultBookLink" href="${result.book.href}" target="_blank" rel="noreferrer">Get the book on Amazon</a>
+        </div>
+      `
     : "";
 
   renderStage(
@@ -491,17 +651,22 @@ function renderResult(animate = true) {
           <small>out of 50</small>
         </div>
         <p class="result-copy">${result.summary}</p>
+        <p class="result-range">Scores range from 0 to 50</p>
         <p class="result-note">${result.note}</p>
+        ${bookRec}
         <div class="result-actions">
-          ${primaryAction}
+          <button class="result-button" type="button" id="resultBackButton">Back</button>
           <button class="result-button" type="button" id="resultRestartButton">Take the test again</button>
         </div>
       </article>
     `,
     () => {
-      const resultRestartButton = document.getElementById("resultRestartButton");
-
-      resultRestartButton.addEventListener("click", restartQuiz);
+      document.getElementById("resultBackButton").addEventListener("click", goBackFromResult);
+      document.getElementById("resultRestartButton").addEventListener("click", restartQuiz);
+      const bookLink = document.getElementById("resultBookLink");
+      if (bookLink) {
+        bookLink.addEventListener("click", () => trackPage("/result/book-click"));
+      }
     },
     animate
   );
